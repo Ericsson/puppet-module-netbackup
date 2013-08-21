@@ -1,25 +1,66 @@
 # == Class: netbackup::client
 #
 class netbackup::client(
-  $bp_config_path   = '/usr/openv/netbackup/bp.conf',
-  $client_name      = $::hostname,
-  $client_packages  = undef,
-  $connect_options  = 'localhost 1 0 2',
-  $init_script_path = undef,
-  $server           = "netbackup.${::domain}",
+  $bp_config_path     = '/usr/openv/netbackup/bp.conf',
+  $bp_config_owner    = 'root',
+  $bp_config_group    = 'bin',
+  $bp_config_mode     = '0644',
+  $client_name        = $::hostname,
+  $client_packages    = undef,
+  $connect_options    = 'localhost 1 0 2',
+  $init_script_path   = undef,
+  $init_script_owner  = 'root',
+  $init_script_group  = 'root',
+  $init_script_mode   = '0755',
+  $init_script_source = '/usr/openv/netbackup/bin/goodies/netbackup',
+  $nb_lib_new_file    = '/usr/openv/lib/libnbbaseST.so_new',
+  $nb_lib_path        = '/usr/openv/lib',
+  $nb_bin_new_file    = '/usr/openv/netbackup/bin/bpcd_new',
+  $nb_bin_path        = '/usr/openv/netbackup/lib',
+  $server             = "netbackup.${::domain}",
 ) {
 
   case $::osfamily {
-    'RedHat','Suse': {
-      $default_client_packages = ['SYMCnbclt',
-                          'SYMCnbjava',
-                          'SYMCnbjre',
-                          'SYMCpddea',
-                          'VRTSpbx']
-      $default_init_script_path = '/etc/init.d/netbackup'
+    'RedHat': {
+      case $::lsbmajdistrelease {
+        '5': {
+          $default_client_packages = ['SYMCnbclt',
+                              'SYMCnbjava',
+                              'SYMCnbjre',
+                              'SYMCpddea',
+                              'VRTSpbx']
+          $default_init_script_path = '/etc/init.d/netbackup'
+        }
+        '6': {
+          $default_client_packages = ['SYMCnbclt',
+                              'SYMCnbjava',
+                              'SYMCnbjre',
+                              'SYMCpddea',
+                              'VRTSpbx']
+          $default_init_script_path = '/etc/init.d/netbackup'
+        }
+        default: {
+          fail("Module netbackup::client is supported on RedHat lsbmajdistrelease 5 and 6. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+        }
+      }
+    }
+    'Suse': {
+      case $::lsbmajdistrelease {
+        '11': {
+          $default_client_packages = ['SYMCnbclt',
+                              'SYMCnbjava',
+                              'SYMCnbjre',
+                              'SYMCpddea',
+                              'VRTSpbx']
+          $default_init_script_path = '/etc/init.d/netbackup'
+        }
+        default: {
+          fail("Module netbackup::client is supported on Suse with lsbmajdistrelease 11. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+        }
+      }
     }
     default: {
-      fail("Module ${module_name} is supported on osfamily RedHat and SuSE. Your osfamily is identified as ${::osfamily}")
+      fail("Module netbackup::client is supported on osfamily RedHat and SuSE. Your osfamily is identified as ${::osfamily}")
     }
   }
 
@@ -43,9 +84,9 @@ class netbackup::client(
   file { 'bp_config':
     ensure  => 'present',
     path    => $bp_config_path,
-    mode    => '0644',
-    owner   => 'root',
-    group   => 'bin',
+    owner   => $bp_config_owner,
+    group   => $bp_config_group,
+    mode    => $bp_config_mode,
     content => template('netbackup/bp.conf.erb'),
     require => Package['nb_client'],
   }
@@ -53,26 +94,26 @@ class netbackup::client(
   file { 'init_script':
     ensure  => 'present',
     path    => $my_init_script_path,
-    mode    => '0755',
-    owner   => 'root',
-    group   => 'root',
-    source  => '/usr/openv/netbackup/bin/goodies/netbackup',
+    owner   => $init_script_owner,
+    group   => $init_script_group,
+    mode    => $init_script_mode,
+    source  => $init_script_source,
     require => Package['nb_client'],
   }
 
   exec { 'fix_nb_libs':
-    path    => ['/bin','/usr/bin'],
-    cwd     => '/usr/openv/lib',
+    path    => '/bin:/usr/bin',
+    cwd     => $nb_lib_path,
     command => 'rename _new "" *_new',
-    onlyif  => 'test -f /usr/openv/lib/libnbbaseST.so_new',
+    onlyif  => "test -f ${nb_lib_new_file}",
     require => Package['nb_client'],
   }
 
   exec { 'fix_nb_bin':
-    path    => ['/bin','/usr/bin'],
-    cwd     => '/usr/openv/netbackup/bin',
+    path    => '/bin:/usr/bin',
+    cwd     => $nb_bin_path,
     command => 'rename _new "" *_new',
-    onlyif  => 'test -f /usr/openv/netbackup/bin/bpcd_new',
+    onlyif  => "test -f ${nb_bin_new_file}",
     require => Package['nb_client'],
   }
 

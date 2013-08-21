@@ -1,0 +1,5 @@
+# == Class: netbackup
+#
+class netbackup {
+
+}

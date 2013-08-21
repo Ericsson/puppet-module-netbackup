@@ -1,0 +1,8 @@
+name    'ericsson-netbackup'
+version '0.0.1'
+source 'https://github.com/Ericsson/puppet-module-netbackup.git'
+author 'jwennerberg'
+license 'Apache License, Version 2.0'
+summary 'Manage NetBackup'
+description 'Manage NetBackup'
+project_page 'https://github.com/Ericsson/puppet-module-netbackup'

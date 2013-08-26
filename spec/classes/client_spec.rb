@@ -14,7 +14,7 @@ describe 'netbackup::client' do
       it do
         should contain_package('nb_client').with({
           'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx'],
+          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
         })
       end
     end
@@ -30,7 +30,7 @@ describe 'netbackup::client' do
       it do
         should contain_package('nb_client').with({
           'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx'],
+          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
         })
       end
     end
@@ -46,7 +46,7 @@ describe 'netbackup::client' do
       it do
         should contain_package('nb_client').with({
           'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx'],
+          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
         })
       end
     end
@@ -92,12 +92,10 @@ describe 'netbackup::client' do
         })
 
         should contain_file('bp_config').with_content(
-%{# This file is managed by puppet. Do not edit manually.
-#
+%{# This file is being maintained by Puppet.
+# DO NOT EDIT
 SERVER = netbackup.example.com
 CLIENT_NAME = host
-
-CONNECT_OPTIONS = localhost 1 0 2
 })
       end
     end
@@ -122,12 +120,10 @@ CONNECT_OPTIONS = localhost 1 0 2
         })
 
         should contain_file('bp_config').with_content(
-%{# This file is managed by puppet. Do not edit manually.
-#
+%{# This file is being maintained by Puppet.
+# DO NOT EDIT
 SERVER = netbackup.example.com
 CLIENT_NAME = host
-
-CONNECT_OPTIONS = localhost 1 0 2
 })
       end
     end
@@ -157,12 +153,10 @@ CONNECT_OPTIONS = localhost 1 0 2
         })
 
         should contain_file('bp_config').with_content(
-%{# This file is managed by puppet. Do not edit manually.
-#
+%{# This file is being maintained by Puppet.
+# DO NOT EDIT
 SERVER = nb.example.com
 CLIENT_NAME = host
-
-CONNECT_OPTIONS = localhost 1 0 2
 })
       end
     end
@@ -193,12 +187,10 @@ CONNECT_OPTIONS = localhost 1 0 2
         })
 
         should contain_file('bp_config').with_content(
-%{# This file is managed by puppet. Do not edit manually.
-#
+%{# This file is being maintained by Puppet.
+# DO NOT EDIT
 SERVER = nb.example.com
 CLIENT_NAME = realhost123
-
-CONNECT_OPTIONS = localhost 1 0 2
 })
       end
     end

@@ -7,7 +7,6 @@ class netbackup::client(
   $bp_config_mode     = '0644',
   $client_name        = $::hostname,
   $client_packages    = undef,
-  $connect_options    = 'localhost 1 0 2',
   $init_script_path   = undef,
   $init_script_owner  = 'root',
   $init_script_group  = 'root',
@@ -28,7 +27,8 @@ class netbackup::client(
                               'SYMCnbjava',
                               'SYMCnbjre',
                               'SYMCpddea',
-                              'VRTSpbx']
+                              'VRTSpbx',
+                              'nbtar']
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         '6': {
@@ -36,11 +36,12 @@ class netbackup::client(
                               'SYMCnbjava',
                               'SYMCnbjre',
                               'SYMCpddea',
-                              'VRTSpbx']
+                              'VRTSpbx',
+                              'nbtar']
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         default: {
-          fail("Module netbackup::client is supported on RedHat lsbmajdistrelease 5 and 6. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+          fail("netbackup::client is supported on RedHat lsbmajdistrelease 5 and 6. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
         }
       }
     }
@@ -51,16 +52,17 @@ class netbackup::client(
                               'SYMCnbjava',
                               'SYMCnbjre',
                               'SYMCpddea',
-                              'VRTSpbx']
+                              'VRTSpbx',
+                              'nbtar']
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         default: {
-          fail("Module netbackup::client is supported on Suse with lsbmajdistrelease 11. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+          fail("netbackup::client is supported on Suse with lsbmajdistrelease 11. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
         }
       }
     }
     default: {
-      fail("Module netbackup::client is supported on osfamily RedHat and SuSE. Your osfamily is identified as ${::osfamily}")
+      fail("netbackup::client is supported on osfamily RedHat and SuSE. Your osfamily is identified as ${::osfamily}")
     }
   }
 
@@ -102,19 +104,21 @@ class netbackup::client(
   }
 
   exec { 'fix_nb_libs':
-    path    => '/bin:/usr/bin',
-    cwd     => $nb_lib_path,
-    command => 'rename _new "" *_new',
-    onlyif  => "test -f ${nb_lib_new_file}",
-    require => Package['nb_client'],
+    path     => '/bin:/usr/bin',
+    cwd      => $nb_lib_path,
+    provider => 'shell',
+    command  => "for i in $(find . -type f -name \*_new | awk -F _new '{print \$1}'); do mv \${i}_new \$i; done",
+    onlyif   => "test -f ${nb_lib_new_file}",
+    require  => Package['nb_client'],
   }
 
   exec { 'fix_nb_bin':
-    path    => '/bin:/usr/bin',
-    cwd     => $nb_bin_path,
-    command => 'rename _new "" *_new',
-    onlyif  => "test -f ${nb_bin_new_file}",
-    require => Package['nb_client'],
+    path     => '/bin:/usr/bin',
+    cwd      => $nb_bin_path,
+    provider => 'shell',
+    command  => "for i in $(find . -type f -name \*_new | awk -F _new '{print \$1}'); do mv \${i}_new \$i; done",
+    onlyif   => "test -f ${nb_bin_new_file}",
+    require  => Package['nb_client'],
   }
 
   service { 'netbackup':

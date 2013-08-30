@@ -1,6 +1,9 @@
 puppet-module-netbackup
 =======================
 
+[![Build Status](
+https://api.travis-ci.org/Ericsson/puppet-module-netbackup.png?branch=master)](https://travis-ci.org/Ericsson/puppet-module-netbackup)
+
 Puppet module to manage NetBackup
 
 ===

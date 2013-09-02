@@ -15,6 +15,7 @@ netbackup::client is supported and tested on the following systems with Puppet v
  * EL 5
  * EL 6
  * Suse 11
+ * Solaris 10
 
 Client packages can be extracted from a NetBackup Master server
 with script found here: https://github.com/Ericsson/package-netbackup
@@ -118,4 +119,76 @@ server
 netbackup server to connect to
 
 - *Default*: "netbackup.${::domain}"
+
+symcnbclt_package_source
+------------------------
+*Solaris only.* Full path to SYMCnbclt package
+
+- *Default*: /var/tmp/nbclient/SYMCnbclt.pkg
+
+symcnbclt_package_adminfile
+---------------------------
+*Solaris only.* Full path to SYMCnbclt admin file
+
+- *Default*: /var/tmp/nbclient/admin
+
+symcnbjava_package_source
+-------------------------
+*Solaris only.* Full path to SYMCnbjava package
+
+- *Default*: /var/tmp/nbclient/SYMCnbjava.pkg
+
+symcnbjava_package_adminfile
+----------------------------
+*Solaris only.* Full path to SYMCnbjava admin file
+
+- *Default*: /var/tmp/nbclient/admin
+
+symcnbjre_package_source
+------------------------
+*Solaris only.* Full path to SYMCnbjre package
+
+- *Default*: /var/tmp/nbclient/SYMCnbjre.pkg
+
+symcnbjre_package_adminfile
+---------------------------
+*Solaris only.* Full path to SYMCnbjre admin file
+
+- *Default*: /var/tmp/nbclient/admin
+
+symcpddea_package_source
+------------------------
+*Solaris only.* Full path to SYMCpddea package
+
+- *Default*: /var/tmp/nbclient/SYMCpddea.pkg
+
+symcpddea_package_adminfile
+---------------------------
+*Solaris only.* Full path to SYMCpddea admin file
+
+- *Default*: /var/tmp/nbclient/admin
+
+vrtspbx_package_source
+----------------------
+*Solaris only.* Full path to directory containing VRTSpbx package
+
+- *Default*: /var/tmp/nbclient/VRTSpbx
+
+vrtspbx_package_adminfile
+-------------------------
+*Solaris only.* Full path to VRTSpbx admin file
+
+- *Default*: /var/tmp/nbclient/admin
+
+nbtar_package_source
+--------------------
+*Solaris only.* Full path to nbtar package
+
+- *Default*: /var/tmp/nbclient/nbtar.pkg
+
+nbtar_package_adminfile
+-----------------------
+*Solaris only.* Full path to nbtar admin file
+
+- *Default*: /var/tmp/nbclient/admin
 

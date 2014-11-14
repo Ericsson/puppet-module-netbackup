@@ -11,11 +11,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -27,11 +28,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -43,11 +45,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -101,9 +104,8 @@ describe 'netbackup::client' do
       let(:params) { {:client_packages => 'NetBackup'} }
 
       it do
-        should contain_package('nb_client').with({
+        should contain_package('NetBackup').with({
           'ensure' => 'installed',
-          'name'   => 'NetBackup',
         })
       end
     end

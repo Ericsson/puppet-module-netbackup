@@ -182,10 +182,14 @@ class netbackup::client(
 
   } else {
 
-    package { 'nb_client':
+    package { $my_client_packages:
       ensure => 'installed',
-      name   => $my_client_packages,
     }
+  }
+
+  $osfamily_require = $osfamily ? {
+    'Solaris' => 'Package[nb_client]',
+    default   => 'Package[$my_client_packages]',
   }
 
   file { 'bp_config':
@@ -195,7 +199,7 @@ class netbackup::client(
     group   => $bp_config_group,
     mode    => $bp_config_mode,
     content => template('netbackup/bp.conf.erb'),
-    require => Package['nb_client'],
+    require => $osfamily_require,
   }
 
   file { 'init_script':
@@ -205,7 +209,7 @@ class netbackup::client(
     group   => $init_script_group,
     mode    => $init_script_mode,
     source  => $init_script_source,
-    require => Package['nb_client'],
+    require => $osfamily_require,
   }
 
   exec { 'fix_nb_libs':
@@ -214,7 +218,7 @@ class netbackup::client(
     provider => 'shell',
     command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_lib_new_file}",
-    require  => Package['nb_client'],
+    require => $osfamily_require,
   }
 
   exec { 'fix_nb_bin':
@@ -223,7 +227,7 @@ class netbackup::client(
     provider => 'shell',
     command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_bin_new_file}",
-    require  => Package['nb_client'],
+    require => $osfamily_require,
   }
 
   service { 'netbackup':

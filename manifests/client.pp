@@ -114,9 +114,8 @@ class netbackup::client(
     validate_absolute_path($nbtar_package_source)
     validate_absolute_path($nbtar_package_adminfile)
 
-    package { 'nb_client':
+    package { 'SYMCnbclt':
       ensure    => 'installed',
-      name      => 'SYMCnbclt',
       source    => $symcnbclt_package_source,
       adminfile => $symcnbclt_package_adminfile,
       require   => Package['VRTSpbx'],

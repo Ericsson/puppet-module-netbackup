@@ -89,10 +89,17 @@ class netbackup::client(
     }
   }
 
-  if $client_packages == undef {
-    $my_client_packages = $default_client_packages
+
+  # Solaris specifc workaround
+  # $my_client_packages is needed on Solaris for dependencies checks only not for package selection.
+  if $::osfamily == 'Solaris' {
+    $my_client_packages = 'nb_client'
   } else {
-    $my_client_packages = $client_packages
+    if $client_packages == undef {
+      $my_client_packages = $default_client_packages
+    } else {
+      $my_client_packages = $client_packages
+    }
   }
 
   if $init_script_path == undef {

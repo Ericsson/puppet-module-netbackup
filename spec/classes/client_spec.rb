@@ -17,6 +17,8 @@ describe 'netbackup::client' do
           :architecture      => 'x86_64',
           :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
         },
+# Solaris needs require Package['nb_client']
+# still searching for a good solution
       'Solaris10-i386' =>
         {
           :osfamily          => 'Solaris',
@@ -57,25 +59,22 @@ describe 'netbackup::client' do
         it { should compile.with_all_deps }
 
         if v[:osfamily] == 'Solaris'
-        # Solaris package stuff
-          required_packages_array = Array.new
-          required_packages_array = nil
+          # Solaris needs special handling
+          required_packages_array = 'Package[nb_client]'
 
         else
-        # Linux package stuff
-
           # build package array for osfamily depended required packages
           required_packages_array = Array.new
           v[:client_packages].each do |package|
             required_packages_array.push('Package['+package+']')
           end
+        end
 
-          v[:client_packages].each do |package|
-            it do
-              should contain_package(package).with({
-                'ensure' => 'installed',
-              })
-            end
+        v[:client_packages].each do |package|
+          it do
+            should contain_package(package).with({
+              'ensure' => 'installed',
+            })
           end
         end
 

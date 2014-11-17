@@ -25,7 +25,7 @@ class netbackup::client(
   $symcnbjre_package_adminfile  = '/var/tmp/nbclient/admin',
   $symcpddea_package_source     = '/var/tmp/nbclient/SYMCpddea.pkg',
   $symcpddea_package_adminfile  = '/var/tmp/nbclient/admin',
-  $vrtspbx_package_source       = '/var/tmp/nbclient/VRTSpbx',
+  $vrtspbx_package_source       = '/var/tmp/nbclient/VRTSpbx.pkg',
   $vrtspbx_package_adminfile    = '/var/tmp/nbclient/admin',
   $nbtar_package_source         = '/var/tmp/nbclient/nbtar.pkg',
   $nbtar_package_adminfile      = '/var/tmp/nbclient/admin',

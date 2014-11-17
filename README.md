@@ -56,7 +56,7 @@ client name in bp.conf. Used as index on Master server
 
 client_packages
 ---------------
-name of client packages to install
+name of client packages to install. Not applicable on osfamily Solaris.
 
 - *Default*: undef (OS default)
 

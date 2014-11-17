@@ -76,7 +76,6 @@ class netbackup::client(
     'Solaris': {
       case $::kernelrelease {
         '5.10': {
-          $default_client_packages = []
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         default: {
@@ -89,10 +88,16 @@ class netbackup::client(
     }
   }
 
-  if $client_packages == undef {
-    $my_client_packages = $default_client_packages
+  # Solaris specifc workaround
+  # $my_client_packages is needed on Solaris for dependencies checks only not for package selection.
+  if $::osfamily == 'Solaris' {
+    $my_client_packages = 'SYMCnbclt'
   } else {
-    $my_client_packages = $client_packages
+    if $client_packages == undef {
+      $my_client_packages = $default_client_packages
+    } else {
+      $my_client_packages = $client_packages
+    }
   }
 
   if $init_script_path == undef {
@@ -114,9 +119,8 @@ class netbackup::client(
     validate_absolute_path($nbtar_package_source)
     validate_absolute_path($nbtar_package_adminfile)
 
-    package { 'nb_client':
+    package { 'SYMCnbclt':
       ensure    => 'installed',
-      name      => 'SYMCnbclt',
       source    => $symcnbclt_package_source,
       adminfile => $symcnbclt_package_adminfile,
       require   => Package['VRTSpbx'],
@@ -182,9 +186,8 @@ class netbackup::client(
 
   } else {
 
-    package { 'nb_client':
+    package { $my_client_packages:
       ensure => 'installed',
-      name   => $my_client_packages,
     }
   }
 
@@ -195,7 +198,7 @@ class netbackup::client(
     group   => $bp_config_group,
     mode    => $bp_config_mode,
     content => template('netbackup/bp.conf.erb'),
-    require => Package['nb_client'],
+    require => Package[$my_client_packages],
   }
 
   file { 'init_script':
@@ -205,7 +208,7 @@ class netbackup::client(
     group   => $init_script_group,
     mode    => $init_script_mode,
     source  => $init_script_source,
-    require => Package['nb_client'],
+    require => Package[$my_client_packages],
   }
 
   exec { 'fix_nb_libs':
@@ -214,7 +217,7 @@ class netbackup::client(
     provider => 'shell',
     command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_lib_new_file}",
-    require  => Package['nb_client'],
+    require  => Package[$my_client_packages],
   }
 
   exec { 'fix_nb_bin':
@@ -223,7 +226,7 @@ class netbackup::client(
     provider => 'shell',
     command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_bin_new_file}",
-    require  => Package['nb_client'],
+    require  => Package[$my_client_packages],
   }
 
   service { 'netbackup':

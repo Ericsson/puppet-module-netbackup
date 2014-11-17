@@ -11,11 +11,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -27,11 +28,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -43,11 +45,12 @@ describe 'netbackup::client' do
         }
       end
 
-      it do
-        should contain_package('nb_client').with({
-          'ensure' => 'installed',
-          'name'   => ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'],
-        })
+      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        it do
+          should contain_package(package).with({
+            'ensure' => 'installed',
+          })
+        end
       end
     end
 
@@ -61,7 +64,7 @@ describe 'netbackup::client' do
       end
 
       it do
-        should contain_package('nb_client').with({'ensure' => 'installed', 'name' => 'SYMCnbclt', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
+        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
         should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
         should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
         should contain_package('VRTSpbx').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/VRTSpbx.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
@@ -80,7 +83,7 @@ describe 'netbackup::client' do
       end
 
       it do
-        should contain_package('nb_client').with({'ensure' => 'installed', 'name' => 'SYMCnbclt', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
+        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
         should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
         should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
         should contain_package('SYMCpddea').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCpddea.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
@@ -101,9 +104,8 @@ describe 'netbackup::client' do
       let(:params) { {:client_packages => 'NetBackup'} }
 
       it do
-        should contain_package('nb_client').with({
+        should contain_package('NetBackup').with({
           'ensure' => 'installed',
-          'name'   => 'NetBackup',
         })
       end
     end
@@ -131,7 +133,7 @@ describe 'netbackup::client' do
         }
       end
       it do
-        should contain_package('nb_client').with({'ensure' => 'installed', 'name' => 'SYMCnbclt', 'source' => '/var/tmp/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/admin' })
+        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/admin' })
         should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/admin'})
         should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/admin'})
         should contain_package('VRTSpbx').with({'ensure' => 'installed', 'source' => '/var/tmp/VRTSpbx.pkg', 'adminfile' => '/var/tmp/admin'})

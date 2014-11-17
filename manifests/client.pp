@@ -212,7 +212,7 @@ class netbackup::client(
     path     => '/bin:/usr/bin',
     cwd      => $nb_lib_path,
     provider => 'shell',
-    command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
+    command  => "for i in `find . -type f -name \\*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_lib_new_file}",
     require  => Package['nb_client'],
   }
@@ -221,7 +221,7 @@ class netbackup::client(
     path     => '/bin:/usr/bin',
     cwd      => $nb_bin_path,
     provider => 'shell',
-    command  => "for i in `find . -type f -name \*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
+    command  => "for i in `find . -type f -name \\*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
     onlyif   => "test -f ${nb_bin_new_file}",
     require  => Package['nb_client'],
   }

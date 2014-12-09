@@ -1,0 +1,14 @@
+{
+  "name": "ericsson-netbackup",
+  "version": "0.2.0",
+  "author": "ericsson",
+  "license": "Apache-2.0",
+  "summary": "Puppet module to manage NetBackup",
+  "source": "https://github.com/Ericsson/puppet-module-netbackup",
+  "project_page": "https://github.com/Ericsson/puppet-module-netbackup",
+  "issues_url": "https://github.com/Ericsson/puppet-module-netbackup/issues",
+  "tags": ["netbackup","backup"],
+  "dependencies": [
+    { "name": "puppetlabs/stdlib", "version_requirement": ">=3.2.0" }
+  ]
+}

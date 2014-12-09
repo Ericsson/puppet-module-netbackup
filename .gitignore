@@ -1,3 +1,4 @@
+# Default .gitignore for Ruby
 *.gem
 *.rbc
 .bundle
@@ -16,3 +17,18 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# Vim
+*.swp
+
+# OS X
+.DS_Store
+
+# Puppet
+coverage/
+spec/fixtures/modules/*
+Gemfile.lock
+
+#emacs backups
+*~
+\#*#

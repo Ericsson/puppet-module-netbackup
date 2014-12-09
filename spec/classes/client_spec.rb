@@ -1,298 +1,435 @@
 require 'spec_helper'
 describe 'netbackup::client' do
+  platform_matrix = {
+    'RedHat5-x86_64' =>
+      {
+        :osfamily          => 'RedHat',
+        :lsbmajdistrelease => '5',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
+    'RedHat6-x86_64' =>
+      {
+        :osfamily          => 'RedHat',
+        :lsbmajdistrelease => '6',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
+    'Solaris10-i386' =>
+      {
+        :osfamily          => 'Solaris',
+        :kernelrelease     => '5.10',
+        :hardwareisa       => 'i386',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'VRTSpbx', 'nbtar', ],
+      },
+    'Solaris10-sparc' =>
+      {
+        :osfamily          => 'Solaris',
+        :kernelrelease     => '5.10',
+        :hardwareisa       => 'sparc',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
+    'Suse11-x86_64' =>
+      {
+        :osfamily          => 'Suse',
+        :lsbmajdistrelease => '11',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
+  }
 
-  describe 'packages' do
+  describe 'with class defaults' do
+    platform_matrix.sort.each do |k,v|
+      context "running on #{v[:osfamily]} #{v[:lsbmajdistrelease]}#{v[:kernelrelease]} (#{v[:architecture]}#{v[:hardwareisa]})" do
+        let :facts do
+          {
+            :osfamily          => v[:osfamily],
+            :lsbmajdistrelease => v[:lsbmajdistrelease],
+            :architecture      => v[:architecture],
+            :kernelrelease     => v[:kernelrelease],
+            :hardwareisa       => v[:hardwareisa],
+            :domain            => 'example.com',
+            :hostname          => 'host',
+          }
+        end
 
-    context 'with class defaults on osfamily redhat with lsbmajdistrelease 5' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '5',
-        }
-      end
+        it { should compile.with_all_deps }
 
-      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
+        # build package array for osfamily depended required packages, Solaris get special treatment
+        if v[:osfamily] == 'Solaris'
+          required_packages_array = 'Package[SYMCnbclt]'
+        else
+          required_packages_array = Array.new
+          v[:client_packages].each do |package|
+            required_packages_array.push('Package['+package+']')
+          end
+        end
+
+        # testing Packages
+        v[:client_packages].each do |package|
+          if v[:osfamily] == 'Solaris'
+            # Solaris specific part
+            if package == 'SYMCnbclt'
+              # SYMCnbclt requires VRTSpbx
+              it do
+                should contain_package(package).with({
+                  'ensure'    => 'installed',
+                  'source'    => "/var/tmp/nbclient/#{package}.pkg",
+                  'adminfile' => '/var/tmp/nbclient/admin',
+                  'require'   => 'Package[VRTSpbx]',
+                })
+              end
+            else
+              it do
+                should contain_package(package).with({
+                  'ensure'    => 'installed',
+                  'source'    => "/var/tmp/nbclient/#{package}.pkg",
+                  'adminfile' => '/var/tmp/nbclient/admin',
+                })
+              end
+            end
+          else
+            # Linux specific part
+            it do
+              should contain_package(package).with({
+                'ensure' => 'installed',
+              })
+            end
+          end
+        end
+
+        # runlevel links (Solaris only) and service
+        if v[:osfamily] == 'Solaris'
+          it do
+            should contain_file('/etc/rc2.d/S77netbackup').with({
+              'ensure'  => 'link',
+              'target'  => '/etc/init.d/netbackup',
+              'require' => 'File[init_script]',
+            })
+          end
+
+          it do
+            should contain_file('/etc/rc0.d/K01netbackup').with({
+              'ensure'  => 'link',
+              'target'  => '/etc/init.d/netbackup',
+              'require' => 'File[init_script]',
+            })
+          end
+
+          it do
+            should contain_file('/etc/rc1.d/K01netbackup').with({
+              'ensure'  => 'link',
+              'target'  => '/etc/init.d/netbackup',
+              'require' => 'File[init_script]',
+            })
+          end
+          # Solaris needs provider parameter to be set to 'init'
+          it do
+            should contain_service('netbackup').with({
+              'ensure'    => 'running',
+              'enable'    => true,
+              'hasstatus' => false,
+              'pattern'   => 'vnetd',
+              'subscribe' => 'File[bp_config]',
+              'require'   => [
+                               'File[init_script]',
+                               'Exec[fix_nb_libs]',
+                               'Exec[fix_nb_bin]',
+                             ],
+              'provider'   => 'init',
+            })
+          end
+        else
+          it do
+            should contain_service('netbackup').with({
+              'ensure'    => 'running',
+              'enable'    => true,
+              'hasstatus' => false,
+              'pattern'   => 'vnetd',
+              'subscribe' => 'File[bp_config]',
+              'require'   => [
+                               'File[init_script]',
+                               'Exec[fix_nb_libs]',
+                               'Exec[fix_nb_bin]',
+                             ],
+            })
+          end
+        end
+
         it do
-          should contain_package(package).with({
-            'ensure' => 'installed',
+          should contain_file('bp_config').with({
+            'ensure'  => 'present',
+            'path'    => '/usr/openv/netbackup/bp.conf',
+            'owner'   => 'root',
+            'group'   => 'bin',
+            'mode'    => '0644',
+            'require' => required_packages_array,
           })
         end
-      end
-    end
+        it { should contain_file('bp_config').with_content(/^SERVER = netbackup.example.com$/) }
+        it { should contain_file('bp_config').with_content(/^CLIENT_NAME = host$/) }
 
-    context 'with class defaults on osfamily redhat with lsbmajdistrelease 6' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '6',
-        }
-      end
-
-      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
         it do
-          should contain_package(package).with({
-            'ensure' => 'installed',
+          should contain_file('init_script').with({
+            'ensure'  => 'present',
+            'path'    => '/etc/init.d/netbackup',
+            'owner'   => 'root',
+            'group'   => 'root',
+            'mode'    => '0755',
+            'source'  => '/usr/openv/netbackup/bin/goodies/netbackup',
+            'require' => required_packages_array,
           })
         end
-      end
-    end
 
-    context 'with class defaults on osfamily suse with lsbmajdistrelease 11' do
-      let :facts do
-        {
-          :osfamily          => 'Suse',
-          :lsbmajdistrelease => '11',
-        }
-      end
-
-      ['SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar'].each do |package|
         it do
-          should contain_package(package).with({
-            'ensure' => 'installed',
+          should contain_exec('fix_nb_libs').with({
+            'path'     => '/bin:/usr/bin',
+            'cwd'      => '/usr/openv/lib',
+            'provider' => 'shell',
+            'command'  => "for i in `find . -type f -name \\*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
+            'onlyif'   => 'test -f /usr/openv/lib/libnbbaseST.so_new',
+            'require'  => required_packages_array,
           })
         end
+
+        it do
+          should contain_exec('fix_nb_bin').with({
+            'path'     => '/bin:/usr/bin',
+            'cwd'      => '/usr/openv/netbackup/bin',
+            'provider' => 'shell',
+            'command'  => "for i in `find . -type f -name \\*_new | awk -F_new '{print \$1}'`; do mv \${i}_new \$i; done",
+            'onlyif'   => 'test -f /usr/openv/netbackup/bin/bpcd_new',
+            'require'  => required_packages_array,
+          })
+        end
+
       end
     end
-
-    context 'with class defaults on osfamily solaris with kernelrelease 5.10 and hardwareisa i386' do
-      let :facts do
-        {
-          :osfamily      => 'Solaris',
-          :kernelrelease => '5.10',
-          :hardwareisa   => 'i386',
-        }
-      end
-
-      it do
-        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
-        should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('VRTSpbx').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/VRTSpbx.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('nbtar').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/nbtar.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-      end
-
-    end
-
-    context 'with class defaults on osfamily solaris with kernelrelease 5.10 and hardwareisa sparc' do
-      let :facts do
-        {
-          :osfamily      => 'Solaris',
-          :kernelrelease => '5.10',
-          :hardwareisa   => 'sparc',
-        }
-      end
-
-      it do
-        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/nbclient/admin' })
-        should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('SYMCpddea').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/SYMCpddea.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('VRTSpbx').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/VRTSpbx.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-        should contain_package('nbtar').with({'ensure' => 'installed', 'source' => '/var/tmp/nbclient/nbtar.pkg', 'adminfile' => '/var/tmp/nbclient/admin'})
-      end
-
-    end
-
-    context 'with specifying client_packages on valid platform' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '6',
-        }
-      end
-
-      let(:params) { {:client_packages => 'NetBackup'} }
-
-      it do
-        should contain_package('NetBackup').with({
-          'ensure' => 'installed',
-        })
-      end
-    end
-
-    context 'with specifying package_source and package_adminfile on osfamily solaris with kernelrelease 5.10 and hardwareisa i386' do
-      let :facts do
-        {
-          :osfamily      => 'Solaris',
-          :kernelrelease => '5.10',
-          :hardwareisa   => 'i386',
-        }
-      end
-      let :params do
-        {
-          :symcnbclt_package_source     => '/var/tmp/SYMCnbclt.pkg',
-          :symcnbclt_package_adminfile  => '/var/tmp/admin',
-          :symcnbjava_package_source    => '/var/tmp/SYMCnbjava.pkg',
-          :symcnbjava_package_adminfile => '/var/tmp/admin',
-          :symcnbjre_package_source     => '/var/tmp/SYMCnbjre.pkg',
-          :symcnbjre_package_adminfile  => '/var/tmp/admin',
-          :vrtspbx_package_source       => '/var/tmp/VRTSpbx.pkg',
-          :vrtspbx_package_adminfile    => '/var/tmp/admin',
-          :nbtar_package_source         => '/var/tmp/nbtar.pkg',
-          :nbtar_package_adminfile      => '/var/tmp/admin',
-        }
-      end
-      it do
-        should contain_package('SYMCnbclt').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbclt.pkg', 'adminfile' => '/var/tmp/admin' })
-        should contain_package('SYMCnbjava').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbjava.pkg', 'adminfile' => '/var/tmp/admin'})
-        should contain_package('SYMCnbjre').with({'ensure' => 'installed', 'source' => '/var/tmp/SYMCnbjre.pkg', 'adminfile' => '/var/tmp/admin'})
-        should contain_package('VRTSpbx').with({'ensure' => 'installed', 'source' => '/var/tmp/VRTSpbx.pkg', 'adminfile' => '/var/tmp/admin'})
-        should contain_package('nbtar').with({'ensure' => 'installed', 'source' => '/var/tmp/nbtar.pkg', 'adminfile' => '/var/tmp/admin'})
-      end
-    end
-
   end
 
-  describe 'config files' do
+  describe 'with osfamily dependend parameters specified' do
+    platform_matrix.select{ |key,val| key.start_with? 'Solaris' }.sort.each do |k,v|
+      describe 'where package_source and package_adminfile are set to valid values (Solaris specific)' do
+        context "running on #{v[:osfamily]} #{v[:kernelrelease]} (#{v[:hardwareisa]})" do
+          let :facts do
+            {
+              :osfamily          => v[:osfamily],
+              :kernelrelease     => v[:kernelrelease],
+              :hardwareisa       => v[:hardwareisa],
+            }
+          end
 
-    context 'defaults on osfamily redhat with lsbmajdistrelease 5' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '5',
-          :domain            => 'example.com',
-          :hostname          => 'host',
-        }
-      end
+          let :params do
+            {
+              :symcnbclt_package_source     => '/var/tmp/SYMCnbclt.pkg',
+              :symcnbclt_package_adminfile  => '/var/tmp/admin',
+              :symcnbjava_package_source    => '/var/tmp/SYMCnbjava.pkg',
+              :symcnbjava_package_adminfile => '/var/tmp/admin',
+              :symcnbjre_package_source     => '/var/tmp/SYMCnbjre.pkg',
+              :symcnbjre_package_adminfile  => '/var/tmp/admin',
+              :symcpddea_package_source     => '/var/tmp/SYMCpddea.pkg',
+              :symcpddea_package_adminfile  => '/var/tmp/admin',
+              :vrtspbx_package_source       => '/var/tmp/VRTSpbx.pkg',
+              :vrtspbx_package_adminfile    => '/var/tmp/admin',
+              :nbtar_package_source         => '/var/tmp/nbtar.pkg',
+              :nbtar_package_adminfile      => '/var/tmp/admin',
+            }
+          end
 
-      it do
-        should contain_file('bp_config').with({
-          'ensure'  => 'present',
-          'path'    => '/usr/openv/netbackup/bp.conf',
-          'owner'   => 'root',
-          'group'   => 'bin',
-          'mode'    => '0644',
-        })
+          v[:client_packages].each do |package|
+            it do
+              should contain_package(package).with({
+                'ensure'    => 'installed',
+                'source'    => "/var/tmp/#{package}.pkg",
+                'adminfile' => '/var/tmp/admin',
+              })
+            end
+          end
 
-        should contain_file('bp_config').with_content(
-%{# This file is being maintained by Puppet.
-# DO NOT EDIT
-SERVER = netbackup.example.com
-CLIENT_NAME = host
-})
-      end
-    end
-
-    context 'defaults on osfamily suse with lsbmajdistrelease 11' do
-      let :facts do
-        {
-          :osfamily          => 'Suse',
-          :lsbmajdistrelease => '11',
-          :domain            => 'example.com',
-          :hostname          => 'host',
-        }
-      end
-
-      it do
-        should contain_file('bp_config').with({
-          'ensure'  => 'present',
-          'path'    => '/usr/openv/netbackup/bp.conf',
-          'owner'   => 'root',
-          'group'   => 'bin',
-          'mode'    => '0644',
-        })
-
-        should contain_file('bp_config').with_content(
-%{# This file is being maintained by Puppet.
-# DO NOT EDIT
-SERVER = netbackup.example.com
-CLIENT_NAME = host
-})
+        end
       end
     end
 
-    context 'defaults on osfamily solaris with kernelrelease 5.10' do
+    ['symcnbclt','symcnbjava','symcnbjre','symcpddea','vrtspbx','nbtar'].each do |value|
       let :facts do
         {
-          :osfamily      => 'Solaris',
-          :kernelrelease => '5.10',
-          :domain        => 'example.com',
-          :hostname      => 'host',
+          :osfamily          => 'Solaris',
+          :kernelrelease     => '5.10',
+          :hardwareisa       => 'sparc',
         }
       end
 
-      it do
-        should contain_file('bp_config').with({
-          'ensure'  => 'present',
-          'path'    => '/usr/openv/netbackup/bp.conf',
-          'owner'   => 'root',
-          'group'   => 'bin',
-          'mode'    => '0644',
-        })
+      context "where #{value}_package_source is set to an invalid value running on Solaris 5.10" do
+        let :params do
+          {
+            value+'_package_source'    => 'nether/ether/a/valid/path',
+          }
+        end
+        it 'should fail' do
+          expect {
+            should contain_class('netbackup::client')
+          }.to raise_error(Puppet::Error)
+        end
+      end
 
-        should contain_file('bp_config').with_content(
-%{# This file is being maintained by Puppet.
-# DO NOT EDIT
-SERVER = netbackup.example.com
-CLIENT_NAME = host
-})
+      context "where #{value}_package_adminfile is set to an invalid value running on Solaris 5.10" do
+        let :params do
+          {
+            value+'_package_adminfile' => 'either/not/a/valid/path',
+          }
+        end
+        it 'should fail' do
+          expect {
+            should contain_class('netbackup::client')
+          }.to raise_error(Puppet::Error)
+        end
       end
     end
+  end
 
-    context 'with specifying server on osfamily redhat with lsbmajdistrelease 6' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '6',
-          :domain            => 'example.com',
-          :hostname          => 'host',
-        }
-      end
+  describe 'with osfamily independend parameters specified' do
+    let :facts do
+      {
+        :osfamily          => 'RedHat',
+        :lsbmajdistrelease => '6',
+        :architecture      => 'x86_64',
+      }
+    end
+
+    context 'where bp_config_path/_owner/_group/_mode are set to valid values' do
       let :params do
         {
-          :server => 'nb.example.com',
+          :bp_config_path  => '/tmp/bp.conf',
+          :bp_config_owner => 'special_owner',
+          :bp_config_group => 'special_group',
+          :bp_config_mode  => '0242',
         }
       end
 
       it do
         should contain_file('bp_config').with({
-          'ensure'  => 'present',
-          'path'    => '/usr/openv/netbackup/bp.conf',
-          'owner'   => 'root',
-          'group'   => 'bin',
-          'mode'    => '0644',
+          'path'  => '/tmp/bp.conf',
+          'owner' => 'special_owner',
+          'group' => 'special_group',
+          'mode'  => '0242',
         })
-
-        should contain_file('bp_config').with_content(
-%{# This file is being maintained by Puppet.
-# DO NOT EDIT
-SERVER = nb.example.com
-CLIENT_NAME = host
-})
       end
     end
 
-    context 'with specifying client_name and server on osfamily redhat with lsbmajdistrelease 6' do
-      let :facts do
-        {
-          :osfamily          => 'RedHat',
-          :lsbmajdistrelease => '6',
-          :domain            => 'example.com',
-          :hostname          => 'host',
-        }
-      end
+    context 'where init_script_path/_owner/_group/_mode/_source are set to valid values' do
       let :params do
         {
-          :server      => 'nb.example.com',
-          :client_name => 'realhost123',
+          :init_script_path   => '/etc/init.d/special_netbackup',
+          :init_script_owner  => 'special_owner',
+          :init_script_group  => 'special_group',
+          :init_script_mode   => '0042',
+          :init_script_source => '/some/other/path/to/netbackup',
         }
       end
 
       it do
-        should contain_file('bp_config').with({
-          'ensure'  => 'present',
-          'path'    => '/usr/openv/netbackup/bp.conf',
-          'owner'   => 'root',
-          'group'   => 'bin',
-          'mode'    => '0644',
+        should contain_file('init_script').with({
+          'path'   => '/etc/init.d/special_netbackup',
+          'owner'  => 'special_owner',
+          'group'  => 'special_group',
+          'mode'   => '0042',
+          'source' => '/some/other/path/to/netbackup',
         })
+      end
+    end
 
-        should contain_file('bp_config').with_content(
-%{# This file is being maintained by Puppet.
-# DO NOT EDIT
-SERVER = nb.example.com
-CLIENT_NAME = realhost123
-})
+    context 'where client_packages is set to a valid value' do
+      let :params do
+        {
+          :client_packages => [ 'for', 'newpackages', ],
+        }
+      end
+
+      it do
+        should contain_package('for').with({
+          'ensure'    => 'installed',
+        })
+      end
+      it do
+        should contain_package('newpackages').with({
+          'ensure'    => 'installed',
+        })
+      end
+
+      it do
+        should contain_file('bp_config').with({
+          'require' => [ 'Package[for]', 'Package[newpackages]' ],
+        })
+      end
+
+      it do
+        should contain_file('init_script').with({
+          'require' => [ 'Package[for]', 'Package[newpackages]' ],
+        })
+      end
+
+      it do
+        should contain_exec('fix_nb_libs').with({
+          'require' => [ 'Package[for]', 'Package[newpackages]' ],
+        })
+      end
+
+      it do
+        should contain_exec('fix_nb_bin').with({
+          'require' => [ 'Package[for]', 'Package[newpackages]' ],
+        })
+      end
+    end
+
+    context 'where client_name is set to a valid value' do
+      let :params do
+        {
+          :client_name => 'me_different',
+        }
+      end
+
+      it { should contain_file('bp_config').with_content(/^CLIENT_NAME = me_different$/) }
+    end
+
+    context 'where server is set to a valid value' do
+      let :params do
+        {
+          :server => 'me_too',
+        }
+      end
+
+      it { should contain_file('bp_config').with_content(/^SERVER = me_too$/) }
+    end
+
+    context 'where nb_lib_new_file and nb_lib_path are set to valid values' do
+      let :params do
+        {
+          :nb_lib_new_file => '/test/libnbbaseST.so_new',
+          :nb_lib_path => '/path',
+        }
+      end
+
+      it do
+        should contain_exec('fix_nb_libs').with({
+          'cwd' => '/path',
+          'onlyif' => 'test -f /test/libnbbaseST.so_new',
+        })
+      end
+    end
+
+    context 'where nb_bin_new_file and nb_bin_path are set to valid values' do
+      let :params do
+        {
+          :nb_bin_new_file => '/usr/openv/netbackup/bin/bpcd_not_so_new',
+          :nb_bin_path     => '/path',
+        }
+      end
+
+      it do
+        should contain_exec('fix_nb_bin').with({
+          'cwd'    => '/path',
+          'onlyif' => 'test -f /usr/openv/netbackup/bin/bpcd_not_so_new',
+        })
       end
     end
 

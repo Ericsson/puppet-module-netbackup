@@ -32,6 +32,25 @@ class netbackup::client(
 ) {
 
   case $::osfamily {
+    # Ubuntu
+    'Debian': {
+      case $::lsbmajdistrelease {
+        '12','14': {
+          $default_client_packages =  [
+                                        'symcnbclt',
+                                        'symcnbjava',
+                                        'symcnbjre',
+                                        'symcpddea',
+                                        'vrtspbx',
+                                        'nbtar',
+                                      ]
+          $default_init_script_path = '/etc/init.d/netbackup'
+        }
+        default: {
+          fail("netbackup::client is supported on Ubuntu lsbmajdistrelease 12 and 14. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+        }
+      }
+    }
     'RedHat': {
       case $::lsbmajdistrelease {
         '5': {

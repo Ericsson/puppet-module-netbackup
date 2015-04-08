@@ -16,6 +16,8 @@ netbackup::client is supported and tested on the following systems with Puppet v
  * EL 6
  * Suse 11
  * Solaris 10
+ * Ubuntu 12.04
+ * Ubuntu 14.04
 
 Client packages can be extracted from a NetBackup Master server
 with script found here: https://github.com/Ericsson/package-netbackup

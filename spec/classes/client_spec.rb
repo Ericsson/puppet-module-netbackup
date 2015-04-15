@@ -1,6 +1,20 @@
 require 'spec_helper'
 describe 'netbackup::client' do
   platform_matrix = {
+    'Ubuntu1204-x86_64' =>
+      {
+        :osfamily          => 'Debian',
+        :lsbmajdistrelease => '12',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'symcnbclt', 'symcnbjava', 'symcnbjre', 'symcpddea', 'vrtspbx', 'nbtar', ],
+      },
+    'Ubuntu1404-x86_64' =>
+      {
+        :osfamily          => 'Debian',
+        :lsbmajdistrelease => '14',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'symcnbclt', 'symcnbjava', 'symcnbjre', 'symcpddea', 'vrtspbx', 'nbtar', ],
+      },
     'RedHat5-x86_64' =>
       {
         :osfamily          => 'RedHat',

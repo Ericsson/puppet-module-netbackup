@@ -93,6 +93,12 @@ init script source
 
 - *Default*: /usr/openv/netbackup/bin/goodies/netbackup
 
+media_server
+------------
+Hostname of NetBackup Media Server
+
+- *Default*: undef
+
 nb_lib_path
 -----------
 path where netbackup libs are stored

@@ -419,8 +419,22 @@ describe 'netbackup::client' do
         }
       end
 
-      it { should contain_file('bp_config').with_content(/^SERVER = me_too$/) }
+      it {
+        should contain_file('bp_config').with_content(/^SERVER = me_too$/)
+        should contain_file('bp_config').without_content(/^MEDIA_SERVER\s*=/)
+      }
     end
+
+    context 'where media_server is set to a valid value' do
+      let :params do
+        {
+          :media_server => 'my_media_server',
+        }
+      end
+
+      it { should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server$/) }
+    end
+
 
     context 'where nb_lib_new_file and nb_lib_path are set to valid values' do
       let :params do

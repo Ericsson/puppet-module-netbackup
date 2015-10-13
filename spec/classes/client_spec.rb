@@ -29,6 +29,13 @@ describe 'netbackup::client' do
         :architecture      => 'x86_64',
         :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
       },
+    'RedHat7-x86_64' =>
+      {
+        :osfamily          => 'RedHat',
+        :lsbmajdistrelease => '7',
+        :architecture      => 'x86_64',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', ],
+      },
     'Solaris10-i386' =>
       {
         :osfamily          => 'Solaris',

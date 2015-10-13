@@ -71,8 +71,16 @@ class netbackup::client(
                               'nbtar']
           $default_init_script_path = '/etc/init.d/netbackup'
         }
+        '7': {
+          $default_client_packages = ['SYMCnbclt',
+                              'SYMCnbjava',
+                              'SYMCnbjre',
+                              'SYMCpddea',
+                              'VRTSpbx']
+          $default_init_script_path = '/etc/init.d/netbackup'
+        }
         default: {
-          fail("netbackup::client is supported on RedHat lsbmajdistrelease 5 and 6. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
+          fail("netbackup::client is supported on RedHat lsbmajdistrelease 5, 6 and 7. Your lsbmajdistrelease is identified as ${::lsbmajdistrelease}")
         }
       }
     }

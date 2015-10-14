@@ -14,6 +14,7 @@ netbackup::client is supported and tested on the following systems with Puppet v
 
  * EL 5
  * EL 6
+ * EL 7
  * Suse 11
  * Solaris 10
  * Ubuntu 12.04
@@ -91,6 +92,12 @@ init_script_source
 init script source
 
 - *Default*: /usr/openv/netbackup/bin/goodies/netbackup
+
+media_server
+------------
+Hostname of NetBackup Media Server
+
+- *Default*: undef
 
 nb_lib_path
 -----------

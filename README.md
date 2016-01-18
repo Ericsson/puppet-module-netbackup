@@ -201,3 +201,13 @@ nbtar_package_adminfile
 
 - *Default*: /var/tmp/nbclient/admin
 
+HIERA Example
+-------------
+<pre>
+netbackup::client::server: 'netbackup'
+netbackup::client::client_name: "%{::hostname}.%{::domain}"
+netbackup::client::media_server:
+  - mediaserver1
+  - mediaserver2
+  - mediaserver3
+</pre>

@@ -444,7 +444,7 @@ describe 'netbackup::client' do
     context 'where media_server is set to a valid value' do
       let :params do
         {
-          :media_server => 'my_media_server',
+          :media_server => ['my_media_server'],
         }
       end
 

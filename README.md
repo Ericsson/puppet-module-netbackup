@@ -15,7 +15,7 @@ netbackup::client is supported and tested on the following systems with Puppet v
  * EL 5
  * EL 6
  * Suse 11
- * Solaris 10
+ * Solaris 9,10 and 11
  * Ubuntu 12.04
  * Ubuntu 14.04
 

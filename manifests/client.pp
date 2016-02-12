@@ -94,11 +94,11 @@ class netbackup::client(
     }
     'Solaris': {
       case $::kernelrelease {
-        '5.11','5.10': {
+        '5.11','5.10','5.9': {
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         default: {
-          fail("netbackup::client is supported on Solaris with kernelrelease 5.10 and 5.11. Your kernelrelease is identified as ${::kernelrelease}")
+          fail("netbackup::client is supported on Solaris with kernelrelease 5.9, 5.10 and 5.11. Your kernelrelease is identified as ${::kernelrelease}")
         }
       }
     }
@@ -107,18 +107,16 @@ class netbackup::client(
     }
   }
 
-  # Solaris specifc workaround
+  # Solaris specific workarounds
   # $my_client_packages is needed on Solaris for dependencies checks only not for package selection.
-  # Package provider sun is used since building Solaris11 packages is cumbersome
-  # and outside the scope
+  # Package provider sun is used since building Solaris11 packages is cumbersome and outside the scope
   if $::osfamily == 'Solaris' {
-    $my_client_packages = 'SYMCnbclt'
+	  $my_client_packages = 'SYMCnbclt'
   } else {
-    if $client_packages == undef {
-      $my_client_packages = $default_client_packages
-    } else {
-      $my_client_packages = $client_packages
-    }
+		if $client_packages == undef {
+			$my_client_packages = $default_client_packages} else {
+				$my_client_packages = $client_packages
+			}
   }
 
   if $init_script_path == undef {
@@ -129,7 +127,7 @@ class netbackup::client(
 
   if $::osfamily == 'Solaris' {
 
-    validate_absolute_path($symcnbclt_package_source)
+		validate_absolute_path($symcnbclt_package_source)
     validate_absolute_path($symcnbclt_package_adminfile)
     validate_absolute_path($symcnbjava_package_source)
     validate_absolute_path($symcnbjava_package_adminfile)
@@ -183,7 +181,7 @@ class netbackup::client(
 
       package { 'SYMCpddea':
         ensure    => 'installed',
-	provider => 'sun',
+				provider => 'sun',
         source    => $symcpddea_package_source,
         adminfile => $symcpddea_package_adminfile,
       }

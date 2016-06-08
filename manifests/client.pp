@@ -109,7 +109,6 @@ class netbackup::client(
 
   # Solaris specific workarounds
   # $my_client_packages is needed on Solaris for dependencies checks only not for package selection.
-  # Package provider sun is used since building Solaris11 packages is cumbersome and outside the scope
   if $::osfamily == 'Solaris' {
 	  $my_client_packages = 'SYMCnbclt'
   } else {

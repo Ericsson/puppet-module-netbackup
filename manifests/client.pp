@@ -180,7 +180,7 @@ class netbackup::client(
 
       package { 'SYMCpddea':
         ensure    => 'installed',
-				provider => 'sun',
+        provider => 'sun',
         source    => $symcpddea_package_source,
         adminfile => $symcpddea_package_adminfile,
       }

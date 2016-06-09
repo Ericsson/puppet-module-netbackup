@@ -110,12 +110,12 @@ class netbackup::client(
   # Solaris specific workarounds
   # $my_client_packages is needed on Solaris for dependencies checks only, not for package selection.
   if $::osfamily == 'Solaris' {
-	  $my_client_packages = 'SYMCnbclt'
+    $my_client_packages = 'SYMCnbclt'
   } else {
-		if $client_packages == undef {
-			$my_client_packages = $default_client_packages} else {
-				$my_client_packages = $client_packages
-			}
+    if $client_packages == undef {
+      $my_client_packages = $default_client_packages} else {
+      $my_client_packages = $client_packages
+      }
   }
 
   if $init_script_path == undef {
@@ -126,7 +126,7 @@ class netbackup::client(
 
   if $::osfamily == 'Solaris' {
 
-		validate_absolute_path($symcnbclt_package_source)
+    validate_absolute_path($symcnbclt_package_source)
     validate_absolute_path($symcnbclt_package_adminfile)
     validate_absolute_path($symcnbjava_package_source)
     validate_absolute_path($symcnbjava_package_adminfile)
@@ -139,7 +139,7 @@ class netbackup::client(
 
     package { 'SYMCnbclt':
       ensure    => 'installed',
-      provider => 'sun',
+      provider  => 'sun',
       source    => $symcnbclt_package_source,
       adminfile => $symcnbclt_package_adminfile,
       require   => Package['VRTSpbx'],
@@ -147,28 +147,28 @@ class netbackup::client(
 
     package { 'SYMCnbjava':
       ensure    => 'installed',
-      provider => 'sun',
+      provider  => 'sun',
       source    => $symcnbjava_package_source,
       adminfile => $symcnbjava_package_adminfile,
     }
 
     package { 'SYMCnbjre':
       ensure    => 'installed',
-      provider => 'sun',
+      provider  => 'sun',
       source    => $symcnbjre_package_source,
       adminfile => $symcnbjre_package_adminfile,
     }
 
     package { 'VRTSpbx':
       ensure    => 'installed',
-      provider => 'sun',
+      provider  => 'sun',
       source    => $vrtspbx_package_source,
       adminfile => $vrtspbx_package_adminfile,
     }
 
     package { 'nbtar':
       ensure    => 'installed',
-      provider => 'sun',
+      provider  => 'sun',
       source    => $nbtar_package_source,
       adminfile => $nbtar_package_adminfile,
     }
@@ -180,7 +180,7 @@ class netbackup::client(
 
       package { 'SYMCpddea':
         ensure    => 'installed',
-        provider => 'sun',
+        provider  => 'sun',
         source    => $symcpddea_package_source,
         adminfile => $symcpddea_package_adminfile,
       }

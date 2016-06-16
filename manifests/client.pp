@@ -220,7 +220,7 @@ class netbackup::client(
   }
 
   file { 'bp_config':
-    ensure  => 'present',
+    ensure  => 'file',
     path    => $bp_config_path,
     owner   => $bp_config_owner,
     group   => $bp_config_group,
@@ -230,7 +230,7 @@ class netbackup::client(
   }
 
   file { 'init_script':
-    ensure  => 'present',
+    ensure  => 'file',
     path    => $my_init_script_path,
     owner   => $init_script_owner,
     group   => $init_script_group,

@@ -179,7 +179,7 @@ describe 'netbackup::client' do
 
         it do
           should contain_file('bp_config').with({
-            'ensure'  => 'present',
+            'ensure'  => 'file',
             'path'    => '/usr/openv/netbackup/bp.conf',
             'owner'   => 'root',
             'group'   => 'bin',
@@ -192,7 +192,7 @@ describe 'netbackup::client' do
 
         it do
           should contain_file('init_script').with({
-            'ensure'  => 'present',
+            'ensure'  => 'file',
             'path'    => '/etc/init.d/netbackup',
             'owner'   => 'root',
             'group'   => 'root',

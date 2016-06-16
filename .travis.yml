@@ -24,7 +24,7 @@ env:
     - PUPPET_GEM_VERSION="~> 4.3.0"
     - PUPPET_GEM_VERSION="~> 4.4.0"
     - PUPPET_GEM_VERSION="~> 4.5.0"
-    - PUPPET_GEM_VERSION="~> 4"
+    - PUPPET_GEM_VERSION="~> 4" STRICT_VARIABLES="yes"
 
 sudo: false
 
@@ -56,7 +56,7 @@ matrix:
     - rvm: 1.8.7
       env: PUPPET_GEM_VERSION="~> 4.5.0"
     - rvm: 1.8.7
-      env: PUPPET_GEM_VERSION="~> 4"
+      env: PUPPET_GEM_VERSION="~> 4" STRICT_VARIABLES="yes"
 
 notifications:
   email: false

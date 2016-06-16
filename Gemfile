@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-if puppetversion = ENV['PUPPET_GEM_VERSION']
-  gem 'puppet', puppetversion, :require => false
+if ENV['PUPPET_GEM_VERSION']
+  gem 'puppet', ENV['PUPPET_GEM_VERSION'], :require => false
 else
   gem 'puppet', :require => false
 end

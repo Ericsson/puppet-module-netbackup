@@ -109,6 +109,7 @@ describe 'netbackup::client' do
               it do
                 should contain_package(package).with({
                   'ensure'    => 'installed',
+                  'provider'  => 'sun',
                   'source'    => "/var/tmp/nbclient/#{package}.pkg",
                   'adminfile' => '/var/tmp/nbclient/admin',
                   'require'   => 'Package[VRTSpbx]',
@@ -118,6 +119,7 @@ describe 'netbackup::client' do
               it do
                 should contain_package(package).with({
                   'ensure'    => 'installed',
+                  'provider'  => 'sun',
                   'source'    => "/var/tmp/nbclient/#{package}.pkg",
                   'adminfile' => '/var/tmp/nbclient/admin',
                 })

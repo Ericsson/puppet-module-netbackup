@@ -8,7 +8,7 @@ end
 
 gem 'metadata-json-lint'
 gem 'puppetlabs_spec_helper', '>= 1.1.1'
-gem 'puppet-lint', :git => 'https://github.com/rodjek/puppet-lint.git'
+gem 'puppet-lint', '>= 1.0', '< 3.0' # change to '~> 2.0' once the plugins got updated
 gem 'facter', '>= 1.7.0'
 gem 'rspec-puppet'
 gem 'puppet-lint-absolute_classname-check'

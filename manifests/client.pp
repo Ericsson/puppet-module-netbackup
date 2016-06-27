@@ -103,11 +103,11 @@ class netbackup::client(
     }
     'Solaris': {
       case $::kernelrelease {
-        '5.10': {
+        '5.11','5.10','5.9': {
           $default_init_script_path = '/etc/init.d/netbackup'
         }
         default: {
-          fail("netbackup::client is supported on Solaris with kernelrelease 5.10. Your kernelrelease is identified as ${::kernelrelease}")
+          fail("netbackup::client is supported on Solaris with kernelrelease 5.9, 5.10 and 5.11. Your kernelrelease is identified as ${::kernelrelease}")
         }
       }
     }
@@ -116,16 +116,16 @@ class netbackup::client(
     }
   }
 
-  # Solaris specifc workaround
-  # $my_client_packages is needed on Solaris for dependencies checks only not for package selection.
+  # Solaris specific workarounds
+  # $my_client_packages is needed on Solaris for dependencies checks only, not for package selection.
   if $::osfamily == 'Solaris' {
     $my_client_packages = 'SYMCnbclt'
   } else {
     if $client_packages == undef {
       $my_client_packages = $default_client_packages
-    } else {
+      } else {
       $my_client_packages = $client_packages
-    }
+      }
   }
 
   if $init_script_path == undef {
@@ -149,6 +149,7 @@ class netbackup::client(
 
     package { 'SYMCnbclt':
       ensure    => 'installed',
+      provider  => 'sun',
       source    => $symcnbclt_package_source,
       adminfile => $symcnbclt_package_adminfile,
       require   => Package['VRTSpbx'],
@@ -156,24 +157,28 @@ class netbackup::client(
 
     package { 'SYMCnbjava':
       ensure    => 'installed',
+      provider  => 'sun',
       source    => $symcnbjava_package_source,
       adminfile => $symcnbjava_package_adminfile,
     }
 
     package { 'SYMCnbjre':
       ensure    => 'installed',
+      provider  => 'sun',
       source    => $symcnbjre_package_source,
       adminfile => $symcnbjre_package_adminfile,
     }
 
     package { 'VRTSpbx':
       ensure    => 'installed',
+      provider  => 'sun',
       source    => $vrtspbx_package_source,
       adminfile => $vrtspbx_package_adminfile,
     }
 
     package { 'nbtar':
       ensure    => 'installed',
+      provider  => 'sun',
       source    => $nbtar_package_source,
       adminfile => $nbtar_package_adminfile,
     }
@@ -185,6 +190,7 @@ class netbackup::client(
 
       package { 'SYMCpddea':
         ensure    => 'installed',
+        provider  => 'sun',
         source    => $symcpddea_package_source,
         adminfile => $symcpddea_package_adminfile,
       }

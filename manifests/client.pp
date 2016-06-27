@@ -113,7 +113,8 @@ class netbackup::client(
     $my_client_packages = 'SYMCnbclt'
   } else {
     if $client_packages == undef {
-      $my_client_packages = $default_client_packages} else {
+      $my_client_packages = $default_client_packages
+      } else {
       $my_client_packages = $client_packages
       }
   }

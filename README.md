@@ -96,7 +96,7 @@ init script source
 
 media_server
 ------------
-Hostname of NetBackup Media Server
+Hostname of NetBackup Media Server(s). Can be supplied as a string or as an array.
 
 - *Default*: undef
 

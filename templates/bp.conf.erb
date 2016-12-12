@@ -2,7 +2,7 @@
 # DO NOT EDIT
 SERVER = <%= @server %>
 CLIENT_NAME = <%= @client_name -%>
-<% if @media_server -%>
-<% @media_server.each do |value| %>
+<% if @media_server_real -%>
+<% @media_server_real.each do |value| %>
 MEDIA_SERVER = <%= value %><% end %>
 <%- end %>

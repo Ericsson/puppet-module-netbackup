@@ -227,6 +227,27 @@ class netbackup::client(
     }
   }
 
+
+  if $media_server {
+    case type3x($media_server) {
+      'array': {
+        $media_server_real = $media_server
+      }
+      'string': {
+        $media_server_real = any2array($media_server)
+      }
+      default: {
+        fail('netbackup::media_server must be an array or string.')
+      }
+    }
+    validate_array($media_server_real)
+  }
+  else {
+    $mdeia_server_real = undef
+  }
+
+
+
   file { 'bp_config':
     ensure  => 'file',
     path    => $bp_config_path,

@@ -435,6 +435,18 @@ describe 'netbackup::client' do
       it { should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server$/) }
     end
 
+    context 'where media_servers is set to a valid value' do
+      let :params do
+        {
+          :media_servers => [ 'my_media_server_1', 'my_media_server_2' ],
+        }
+      end
+
+      it {
+        should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server_1$/) 
+        should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server_2$/) 
+      }
+    end
 
     context 'where nb_lib_new_file and nb_lib_path are set to valid values' do
       let :params do

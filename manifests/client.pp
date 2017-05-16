@@ -18,6 +18,7 @@ class netbackup::client(
   $nb_bin_path                  = '/usr/openv/netbackup/bin',
   $server                       = "netbackup.${::domain}",
   $media_server                 = undef,
+  $media_servers                = [],
   $symcnbclt_package_source     = '/var/tmp/nbclient/SYMCnbclt.pkg',
   $symcnbclt_package_adminfile  = '/var/tmp/nbclient/admin',
   $symcnbjava_package_source    = '/var/tmp/nbclient/SYMCnbjava.pkg',

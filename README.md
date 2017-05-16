@@ -99,6 +99,12 @@ Hostname of NetBackup Media Server
 
 - *Default*: undef
 
+media_servers
+------------
+Array of hostnames of NetBackup Media Servers
+
+- *Default*: []
+
 nb_lib_path
 -----------
 path where netbackup libs are stored

@@ -5,3 +5,6 @@ CLIENT_NAME = <%= @client_name %>
 <% if @media_server -%>
 MEDIA_SERVER = <%= @media_server %>
 <%- end %>
+<% @media_servers.each do |media_server| %>
+MEDIA_SERVER = <%= media_server %>
+<% end %>

@@ -43,10 +43,24 @@ describe 'netbackup::client' do
         :hardwareisa       => 'i386',
         :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'VRTSpbx', 'nbtar', ],
       },
+    'Solaris9-sparc' =>
+      {
+        :osfamily          => 'Solaris',
+        :kernelrelease     => '5.9',
+        :hardwareisa       => 'sparc',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
     'Solaris10-sparc' =>
       {
         :osfamily          => 'Solaris',
         :kernelrelease     => '5.10',
+        :hardwareisa       => 'sparc',
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
+      },
+    'Solaris11-sparc' =>
+      {
+        :osfamily          => 'Solaris',
+        :kernelrelease     => '5.11',
         :hardwareisa       => 'sparc',
         :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
       },
@@ -95,6 +109,7 @@ describe 'netbackup::client' do
               it do
                 should contain_package(package).with({
                   'ensure'    => 'installed',
+                  'provider'  => 'sun',
                   'source'    => "/var/tmp/nbclient/#{package}.pkg",
                   'adminfile' => '/var/tmp/nbclient/admin',
                   'require'   => 'Package[VRTSpbx]',
@@ -104,6 +119,7 @@ describe 'netbackup::client' do
               it do
                 should contain_package(package).with({
                   'ensure'    => 'installed',
+                  'provider'  => 'sun',
                   'source'    => "/var/tmp/nbclient/#{package}.pkg",
                   'adminfile' => '/var/tmp/nbclient/admin',
                 })

@@ -6,7 +6,6 @@ else
   gem 'puppet', :require => false
 end
 
-gem 'puppetlabs_spec_helper', '>= 1.2.0', :require => false
 gem 'facter', '>= 1.7.0', :require => false
 gem 'rspec-puppet', :require => false
 gem 'puppet-lint', '~> 2.0', :require => false
@@ -28,3 +27,8 @@ gem 'json',               '<= 1.8',   :require => false if RUBY_VERSION < '2.0.0
 gem 'json_pure',          '<= 2.0.1', :require => false if RUBY_VERSION < '2.0.0'
 gem 'metadata-json-lint', '0.0.11',   :require => false if RUBY_VERSION < '1.9'
 gem 'metadata-json-lint',             :require => false if RUBY_VERSION >= '1.9'
+
+# Puppetlabs is dropping support for Ruby 1.8.7 in latests releases, pin to last supported version when running on Ruby 1.8.7
+gem 'puppetlabs_spec_helper', '2.0.2',    :require => false if RUBY_VERSION >= '1.8.7' && RUBY_VERSION < '1.9'
+gem 'puppetlabs_spec_helper', '>= 2.0.0', :require => false if RUBY_VERSION >= '1.9'
+gem 'parallel_tests',         '<= 2.9.0', :require => false if RUBY_VERSION < '2.0.0'

@@ -34,7 +34,7 @@ describe 'netbackup::client' do
         :osfamily          => 'RedHat',
         :lsbmajdistrelease => '7',
         :architecture      => 'x86_64',
-        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', ],
+        :client_packages   => [ 'SYMCnbclt', 'SYMCnbjava', 'SYMCnbjre', 'SYMCpddea', 'VRTSpbx', 'nbtar', ],
       },
     'Solaris10-i386' =>
       {
@@ -441,7 +441,7 @@ describe 'netbackup::client' do
       }
     end
 
-    context 'where media_server is set to a valid value' do
+    context 'where media_server is set to a valid string value' do
       let :params do
         {
           :media_server => 'my_media_server',
@@ -451,6 +451,18 @@ describe 'netbackup::client' do
       it { should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server$/) }
     end
 
+    context 'where media_server is set to a valid array value' do
+      let :params do
+        {
+          :media_server => ['my_media_server_1', 'my_media_server_2'],
+        }
+      end
+
+      it {
+        should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server_1$/)
+        should contain_file('bp_config').with_content(/^MEDIA_SERVER = my_media_server_2$/)
+      }
+    end
 
     context 'where nb_lib_new_file and nb_lib_path are set to valid values' do
       let :params do

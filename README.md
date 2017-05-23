@@ -22,6 +22,7 @@ netbackup::client is supported and tested on the following systems with Puppet v
 
 Client packages can be extracted from a NetBackup Master server
 with script found here: https://github.com/Ericsson/package-netbackup
+The package nbtar is generated trough the script above.
 
 ===
 
@@ -95,7 +96,7 @@ init script source
 
 media_server
 ------------
-Hostname of NetBackup Media Server
+Hostname of NetBackup Media Server(s). Can be supplied as a string or as an array.
 
 - *Default*: undef
 
@@ -201,3 +202,13 @@ nbtar_package_adminfile
 
 - *Default*: /var/tmp/nbclient/admin
 
+HIERA Example
+-------------
+<pre>
+netbackup::client::server: 'netbackup'
+netbackup::client::client_name: "%{::hostname}.%{::domain}"
+netbackup::client::media_server:
+  - mediaserver1
+  - mediaserver2
+  - mediaserver3
+</pre>

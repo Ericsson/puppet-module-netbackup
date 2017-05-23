@@ -1,7 +1,8 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 SERVER = <%= @server %>
-CLIENT_NAME = <%= @client_name %>
-<% if @media_server -%>
-MEDIA_SERVER = <%= @media_server %>
+CLIENT_NAME = <%= @client_name -%>
+<% if @media_server_real -%>
+<% @media_server_real.each do |value| %>
+MEDIA_SERVER = <%= value %><% end %>
 <%- end %>

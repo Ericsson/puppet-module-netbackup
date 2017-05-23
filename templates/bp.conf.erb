@@ -2,6 +2,6 @@
 # DO NOT EDIT
 SERVER = <%= @server %>
 CLIENT_NAME = <%= @client_name %>
-<% if @media_server -%>
-MEDIA_SERVER = <%= @media_server %>
-<%- end %>
+<% @media_server_array.each do |media_server| -%>
+MEDIA_SERVER = <%= media_server %>
+<% end %>

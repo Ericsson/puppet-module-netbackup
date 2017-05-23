@@ -93,11 +93,11 @@ init script source
 
 - *Default*: /usr/openv/netbackup/bin/goodies/netbackup
 
-media_server
+media_server (array)
 ------------
-Hostname of NetBackup Media Server
+Array of hostname(s) of NetBackup Media Servers. Support for strings is provided for backward compatibility and migration only and will be deprecated soon.
 
-- *Default*: undef
+- *Default*: []
 
 nb_lib_path
 -----------

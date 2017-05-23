@@ -17,7 +17,7 @@ class netbackup::client(
   $nb_bin_new_file              = '/usr/openv/netbackup/bin/bpcd_new',
   $nb_bin_path                  = '/usr/openv/netbackup/bin',
   $server                       = "netbackup.${::domain}",
-  $media_server                 = undef,
+  $media_server                 = [],
   $symcnbclt_package_source     = '/var/tmp/nbclient/SYMCnbclt.pkg',
   $symcnbclt_package_adminfile  = '/var/tmp/nbclient/admin',
   $symcnbjava_package_source    = '/var/tmp/nbclient/SYMCnbjava.pkg',
@@ -113,6 +113,13 @@ class netbackup::client(
     }
     default: {
       fail("netbackup::client is supported on osfamily RedHat, SuSE and Solaris. Your osfamily is identified as ${::osfamily}")
+    }
+  }
+
+  case type3x($media_server) {
+    'array':  { $media_server_array = $media_server  }
+    'string': { $media_server_array = any2array($media_server) }
+    default:  { fail('netbackup::media_server must be an array or string.')
     }
   }
 

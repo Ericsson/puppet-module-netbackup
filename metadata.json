@@ -9,6 +9,6 @@
   "issues_url": "https://github.com/Ericsson/puppet-module-netbackup/issues",
   "tags": ["netbackup","backup"],
   "dependencies": [
-    { "name": "puppetlabs/stdlib", "version_requirement": ">=4.6.0" }
+    { "name": "puppetlabs/stdlib", "version_requirement": ">= 4.6.0 < 6.0.0" }
   ]
 }

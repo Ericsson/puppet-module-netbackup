@@ -1,35 +1,37 @@
 # == Class: netbackup::client
 #
 class netbackup::client(
-  $bp_config_path               = '/usr/openv/netbackup/bp.conf',
-  $bp_config_owner              = 'root',
-  $bp_config_group              = 'bin',
-  $bp_config_mode               = '0644',
-  $client_name                  = $::hostname,
-  $client_packages              = undef,
-  $init_script_path             = undef,
-  $init_script_owner            = 'root',
-  $init_script_group            = 'root',
-  $init_script_mode             = '0755',
-  $init_script_source           = '/usr/openv/netbackup/bin/goodies/netbackup',
-  $nb_lib_new_file              = '/usr/openv/lib/libnbbaseST.so_new',
-  $nb_lib_path                  = '/usr/openv/lib',
-  $nb_bin_new_file              = '/usr/openv/netbackup/bin/bpcd_new',
-  $nb_bin_path                  = '/usr/openv/netbackup/bin',
-  $server                       = "netbackup.${::domain}",
-  $media_server                 = [],
-  $symcnbclt_package_source     = '/var/tmp/nbclient/SYMCnbclt.pkg',
-  $symcnbclt_package_adminfile  = '/var/tmp/nbclient/admin',
-  $symcnbjava_package_source    = '/var/tmp/nbclient/SYMCnbjava.pkg',
-  $symcnbjava_package_adminfile = '/var/tmp/nbclient/admin',
-  $symcnbjre_package_source     = '/var/tmp/nbclient/SYMCnbjre.pkg',
-  $symcnbjre_package_adminfile  = '/var/tmp/nbclient/admin',
-  $symcpddea_package_source     = '/var/tmp/nbclient/SYMCpddea.pkg',
-  $symcpddea_package_adminfile  = '/var/tmp/nbclient/admin',
-  $vrtspbx_package_source       = '/var/tmp/nbclient/VRTSpbx.pkg',
-  $vrtspbx_package_adminfile    = '/var/tmp/nbclient/admin',
-  $nbtar_package_source         = '/var/tmp/nbclient/nbtar.pkg',
-  $nbtar_package_adminfile      = '/var/tmp/nbclient/admin',
+  $bp_config_path                = '/usr/openv/netbackup/bp.conf',
+  $bp_config_owner               = 'root',
+  $bp_config_group               = 'bin',
+  $bp_config_mode                = '0644',
+  $client_name                   = $::hostname,
+  $client_packages               = undef,
+  $init_script_path              = undef,
+  $init_script_owner             = 'root',
+  $init_script_group             = 'root',
+  $init_script_mode              = '0755',
+  $init_script_source            = '/usr/openv/netbackup/bin/goodies/netbackup',
+  $nb_lib_new_file               = '/usr/openv/lib/libnbbaseST.so_new',
+  $nb_lib_path                   = '/usr/openv/lib',
+  $nb_bin_new_file               = '/usr/openv/netbackup/bin/bpcd_new',
+  $nb_bin_path                   = '/usr/openv/netbackup/bin',
+  $server                        = "netbackup.${::domain}",
+  $media_server                  = [],
+  $do_not_reset_file_access_time = undef,
+  $use_ctime_for_incrementals    = undef,
+  $symcnbclt_package_source      = '/var/tmp/nbclient/SYMCnbclt.pkg',
+  $symcnbclt_package_adminfile   = '/var/tmp/nbclient/admin',
+  $symcnbjava_package_source     = '/var/tmp/nbclient/SYMCnbjava.pkg',
+  $symcnbjava_package_adminfile  = '/var/tmp/nbclient/admin',
+  $symcnbjre_package_source      = '/var/tmp/nbclient/SYMCnbjre.pkg',
+  $symcnbjre_package_adminfile   = '/var/tmp/nbclient/admin',
+  $symcpddea_package_source      = '/var/tmp/nbclient/SYMCpddea.pkg',
+  $symcpddea_package_adminfile   = '/var/tmp/nbclient/admin',
+  $vrtspbx_package_source        = '/var/tmp/nbclient/VRTSpbx.pkg',
+  $vrtspbx_package_adminfile     = '/var/tmp/nbclient/admin',
+  $nbtar_package_source          = '/var/tmp/nbclient/nbtar.pkg',
+  $nbtar_package_adminfile       = '/var/tmp/nbclient/admin',
 ) {
 
   case $::osfamily {
@@ -122,6 +124,17 @@ class netbackup::client(
     default:  { fail('netbackup::media_server must be an array or string.')
     }
   }
+
+  $do_not_reset_file_access_time_bool = str2bool($do_not_reset_file_access_time)
+  $use_ctime_for_incrementals_bool    = str2bool($use_ctime_for_incrementals)
+
+  validate_bool(
+    $do_not_reset_file_access_time_bool,
+    $use_ctime_for_incrementals_bool,
+  )
+
+  $do_not_reset_file_access_time_string = bool2str($do_not_reset_file_access_time_bool, 'YES', 'NO')
+  $use_ctime_for_incrementals_string    = bool2str($use_ctime_for_incrementals_bool, 'YES', 'NO')
 
   # Solaris specific workarounds
   # $my_client_packages is needed on Solaris for dependencies checks only, not for package selection.

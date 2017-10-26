@@ -2,6 +2,6 @@ fixtures:
   repositories:
     'stdlib':
       repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
-      ref: '4.6.0'
+      ref: '4.10.0'
   symlinks:
     'netbackup': "#{source_dir}"

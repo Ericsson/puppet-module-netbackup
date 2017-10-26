@@ -205,6 +205,8 @@ describe 'netbackup::client' do
         end
         it { should contain_file('bp_config').with_content(/^SERVER = netbackup.example.com$/) }
         it { should contain_file('bp_config').with_content(/^CLIENT_NAME = host$/) }
+        it { should contain_file('bp_config').without_content(%r{^DO_NOT_RESET_FILE_ACCESS_TIME.*$}) }
+        it { should contain_file('bp_config').without_content(%r{^USE_CTIME_FOR_INCREMENTALS.*$}) }
 
         it do
           should contain_file('init_script').with({
@@ -493,5 +495,37 @@ describe 'netbackup::client' do
       end
     end
 
+    context 'where do_not_reset_file_access_time are set to invalid values' do
+      let :params do
+        {
+          :do_not_reset_file_access_time => 'foo',
+        }
+      end
+      it 'should fail' do
+        expect {
+          should contain_class('netbackup::client')
+          }.to raise_error(Puppet::Error)
+      end
+    end
+    context 'where use_ctime_for_incrementals are set to invalid values' do
+      let :params do
+        {
+          :use_ctime_for_incrementals => 'bar',
+        }
+      end
+      it 'should fail' do
+        expect {
+          should contain_class('netbackup::client')
+          }.to raise_error(Puppet::Error)
+      end
+    end
+    context 'when do_not_reset_file_access_time set to valid true' do
+      let(:params) { { :do_not_reset_file_access_time => true } }
+      it { should contain_file('bp_config').with_content(%r{^DO_NOT_RESET_FILE_ACCESS_TIME = YES$}) }
+    end
+    context 'when use_ctime_for_incrementals set to valid true' do
+      let(:params) { { :use_ctime_for_incrementals => true } }
+      it { should contain_file('bp_config').with_content(%r{^USE_CTIME_FOR_INCREMENTALS = YES$}) }
+    end
   end
 end

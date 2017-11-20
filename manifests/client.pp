@@ -18,8 +18,8 @@ class netbackup::client(
   $nb_bin_path                   = '/usr/openv/netbackup/bin',
   $server                        = "netbackup.${::domain}",
   $media_server                  = [],
-  $do_not_reset_file_access_time = undef,
-  $use_ctime_for_incrementals    = undef,
+  $do_not_reset_file_access_time = false,
+  $use_ctime_for_incrementals    = false,
   $symcnbclt_package_source      = '/var/tmp/nbclient/SYMCnbclt.pkg',
   $symcnbclt_package_adminfile   = '/var/tmp/nbclient/admin',
   $symcnbjava_package_source     = '/var/tmp/nbclient/SYMCnbjava.pkg',
@@ -125,16 +125,8 @@ class netbackup::client(
     }
   }
 
-  $do_not_reset_file_access_time_bool = str2bool($do_not_reset_file_access_time)
-  $use_ctime_for_incrementals_bool    = str2bool($use_ctime_for_incrementals)
-
-  validate_bool(
-    $do_not_reset_file_access_time_bool,
-    $use_ctime_for_incrementals_bool,
-  )
-
-  $do_not_reset_file_access_time_string = bool2str($do_not_reset_file_access_time_bool, 'YES', 'NO')
-  $use_ctime_for_incrementals_string    = bool2str($use_ctime_for_incrementals_bool, 'YES', 'NO')
+  $do_not_reset_file_access_time_string = bool2str(str2bool($do_not_reset_file_access_time), 'YES', 'NO')
+  $use_ctime_for_incrementals_string    = bool2str(str2bool($use_ctime_for_incrementals), 'YES', 'NO')
 
   # Solaris specific workarounds
   # $my_client_packages is needed on Solaris for dependencies checks only, not for package selection.

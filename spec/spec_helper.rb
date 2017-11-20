@@ -11,6 +11,8 @@ RSpec.configure do |config|
     Facter.clear_messages
   end
   config.default_facts = {
-    :environment => 'rp_env',
+    :environment       => 'rp_env',
+    :osfamily          => 'RedHat',
+    :lsbmajdistrelease => '7',
   }
 end

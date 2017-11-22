@@ -5,3 +5,5 @@ CLIENT_NAME = <%= @client_name %>
 <% @media_server_array.each do |media_server| -%>
 MEDIA_SERVER = <%= media_server %>
 <% end %>
+DO_NOT_RESET_FILE_ACCESS_TIME = <%= @do_not_reset_file_access_time_string %>
+USE_CTIME_FOR_INCREMENTALS = <%= @use_ctime_for_incrementals_string %>

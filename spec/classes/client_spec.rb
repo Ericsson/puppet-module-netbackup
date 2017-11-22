@@ -205,6 +205,8 @@ describe 'netbackup::client' do
         end
         it { should contain_file('bp_config').with_content(/^SERVER = netbackup.example.com$/) }
         it { should contain_file('bp_config').with_content(/^CLIENT_NAME = host$/) }
+        it { should contain_file('bp_config').with_content(%r{^DO_NOT_RESET_FILE_ACCESS_TIME = NO$}) }
+        it { should contain_file('bp_config').with_content(%r{^USE_CTIME_FOR_INCREMENTALS = NO$}) }
 
         it do
           should contain_file('init_script').with({
@@ -325,14 +327,6 @@ describe 'netbackup::client' do
   end
 
   describe 'with osfamily independend parameters specified' do
-    let :facts do
-      {
-        :osfamily          => 'RedHat',
-        :lsbmajdistrelease => '6',
-        :architecture      => 'x86_64',
-      }
-    end
-
     context 'where bp_config_path/_owner/_group/_mode are set to valid values' do
       let :params do
         {
@@ -493,5 +487,47 @@ describe 'netbackup::client' do
       end
     end
 
+    context 'when do_not_reset_file_access_time set to valid true' do
+      let(:params) { { :do_not_reset_file_access_time => true } }
+      it { should contain_file('bp_config').with_content(%r{^DO_NOT_RESET_FILE_ACCESS_TIME = YES$}) }
+    end
+
+    context 'when use_ctime_for_incrementals set to valid true' do
+      let(:params) { { :use_ctime_for_incrementals => true } }
+      it { should contain_file('bp_config').with_content(%r{^USE_CTIME_FOR_INCREMENTALS = YES$}) }
+    end
   end
+
+  describe 'variable type and content validations' do
+    mandatory_params = {}
+    validations = {
+      'boolean / stringified' => {
+        :name    => %w[do_not_reset_file_access_time use_ctime_for_incrementals],
+        :valid   => [true, 'true', false, 'false'],
+        :invalid => ['string', %w(array), { 'ha' => 'sh' }, 3, 2.42, nil],
+        :message => '(Unknown type of boolean given|Requires either string to work with)',
+      },
+    }
+
+    validations.sort.each do |type, var|
+      var[:name].each do |var_name|
+        var[:params] = {} if var[:params].nil?
+        var[:valid].each do |valid|
+          context "when #{var_name} (#{type}) is set to valid #{valid} (as #{valid.class})" do
+            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => valid, }].reduce(:merge) }
+            it { should compile }
+          end
+        end
+
+        var[:invalid].each do |invalid|
+          context "when #{var_name} (#{type}) is set to invalid #{invalid} (as #{invalid.class})" do
+            let(:params) { [mandatory_params, var[:params], { :"#{var_name}" => invalid, }].reduce(:merge) }
+            it 'should fail' do
+              expect { should contain_class(subject) }.to raise_error(Puppet::Error, /#{var[:message]}/)
+            end
+          end
+        end
+      end # var[:name].each
+    end # validations.sort.each
+  end # describe 'variable type and content validations'
 end

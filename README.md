@@ -99,6 +99,18 @@ Array of hostname(s) of NetBackup Media Servers. Support for strings is provided
 
 - *Default*: []
 
+do_not_reset_file_access_time (bool)
+------------
+Boolean to chose if netbackup should change the access time on backuped files. The bool is translated to YES or NO in the conf file.
+
+- *Default*: false
+
+use_ctime_for_incrementals (bool)
+------------
+Boolean to chose if netbackup should change the change time on backuped files. The bool is translated to YES or NO in the conf file.
+
+- *Default*: false
+
 nb_lib_path
 -----------
 path where netbackup libs are stored

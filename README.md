@@ -10,7 +10,9 @@ Puppet module to manage NetBackup
 
 # Compatibility
 
-netbackup::client is supported and tested on the following systems with Puppet v3.
+This module has been tested to work on the following systems with the latest
+Puppet v3, v3 with future parser, v4, v5 and v6. See `.travis.yml` for the
+exact matrix of supported Puppet and ruby versions.
 
  * EL 5
  * EL 6

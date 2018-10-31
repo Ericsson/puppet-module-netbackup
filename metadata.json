@@ -1,6 +1,6 @@
 {
   "name": "ericsson-netbackup",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "ericsson",
   "license": "Apache-2.0",
   "summary": "Puppet module to manage NetBackup",
